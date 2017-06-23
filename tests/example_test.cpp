@@ -2,13 +2,10 @@
 #define CATCH_CONFIG_RUNNER
 #include <fakeit.hpp>
 
-TEST_CASE("Simple test", "[example]") {
-    //CanDevice canDevice;
-    //canDevice.init("peakcan", "can0");
-    //canDevice.start();
-}
+#include "testhelpers.hpp"
 
 int main(int argc, char *argv[])
 {
+    test_setupLogger();
     return Catch::Session().run(argc, argv);
 }

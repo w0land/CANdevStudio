@@ -1,31 +1,35 @@
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
+#ifndef LOG_HPP_SAOZ4J6N
+#define LOG_HPP_SAOZ4J6N
+
 #include <cstring>
-#include <memory>
 #include <iostream>
+#include <memory>
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
+
+#include <QtCore/QString>
 
 extern std::shared_ptr<spdlog::logger> kDefaultLogger;
 
-#define __FILENAME__ \
-    (std::strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+inline std::ostream& operator<<(std::ostream& os, const QString& s) { return os << s.toStdString(); }
 
-#define cds_debug(fmt, ...)                                           \
-    do {                                                          \
-        kDefaultLogger->debug("[{}@{}] " fmt, __FILENAME__, __LINE__, \
-                              ##__VA_ARGS__);                     \
+#define __FILENAME__ (std::strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+#define cds_debug(fmt, ...)                                                                                            \
+    do {                                                                                                               \
+        kDefaultLogger->debug("[{}@{}] " fmt, __FILENAME__, __LINE__, ##__VA_ARGS__);                                  \
     } while (0)
-#define cds_warn(fmt, ...)                                            \
-    do {                                                          \
-        kDefaultLogger->warn("[{}@{}] " fmt, __FILENAME__, ___LINE__, \
-                             ##__VA_ARGS__);                      \
+#define cds_warn(fmt, ...)                                                                                             \
+    do {                                                                                                               \
+        kDefaultLogger->warn("[{}@{}] " fmt, __FILENAME__, ___LINE__, ##__VA_ARGS__);                                  \
     } while (0)
-#define cds_error(fmt, ...)                                           \
-    do {                                                          \
-        kDefaultLogger->error("[{}@{}] " fmt, __FILENAME__, __LINE__, \
-                              ##__VA_ARGS__);                     \
+#define cds_error(fmt, ...)                                                                                            \
+    do {                                                                                                               \
+        kDefaultLogger->error("[{}@{}] " fmt, __FILENAME__, __LINE__, ##__VA_ARGS__);                                  \
     } while (0)
-#define cds_info(fmt, ...)                                               \
-    do {                                                             \
-        kDefaultLogger->info("[{}@{}] " fmt, __FILENAME__, __LINE__, \
-                             ##__VA_ARGS__);                         \
+#define cds_info(fmt, ...)                                                                                             \
+    do {                                                                                                               \
+        kDefaultLogger->info("[{}@{}] " fmt, __FILENAME__, __LINE__, ##__VA_ARGS__);                                   \
     } while (0)
+
+#endif /* end of include guard: LOG_HPP_SAOZ4J6N */
