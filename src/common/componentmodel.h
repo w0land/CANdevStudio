@@ -43,7 +43,7 @@ public:
 
     virtual ~ComponentModel()
     {
-        if(_thread) {
+        if (_thread) {
             _thread->exit();
             _thread->wait();
         }
@@ -60,7 +60,7 @@ public:
         setCaption(node.nodeDataModel()->caption());
         setColorMode(darkMode);
 
-        connect((Derived*)this, &Derived::requestRedraw,[&node] { node.nodeGraphicsObject().update(); });
+        connect((Derived*)this, &Derived::requestRedraw, [&node] { node.nodeGraphicsObject().update(); });
         connect(this, &ComponentModelInterface::startSimulation, &_component, &C::startSimulation);
         connect(this, &ComponentModelInterface::stopSimulation, &_component, &C::stopSimulation);
         connect(&_component, &C::mainWidgetDockToggled, this, &ComponentModelInterface::handleDock);
@@ -161,7 +161,7 @@ public:
      */
     virtual QWidget* embeddedWidget() override
     {
-        return _label;
+        return _label.get();
     }
 
     /**
@@ -234,7 +234,7 @@ public:
 
 protected:
     C _component;
-    QLabel* _label{ new QLabel };
+    std::unique_ptr<QLabel> _label{ std::make_unique<QLabel>() };
     QString _caption;
     QString _name;
     bool _resizable{ false };
