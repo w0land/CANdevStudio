@@ -6,8 +6,10 @@
 #include <QtSerialBus/QCanBusDevice>
 #include <log.h>
 
+#include <memory>
+
 struct CanDeviceQt : public CanDeviceInterface {
-    virtual void setParent(QObject *parent) override
+    virtual void setParent(QObject* parent) override
     {
         _parent = parent;
     }
@@ -15,7 +17,7 @@ struct CanDeviceQt : public CanDeviceInterface {
     virtual void setFramesWrittenCbk(const framesWritten_t& cb) override
     {
         if (_device) {
-            QObject::connect(_device, &QCanBusDevice::framesWritten, cb);
+            QObject::connect(_device.get(), &QCanBusDevice::framesWritten, cb);
         } else {
             cds_error("Calling connect on null CAN device");
             throw std::runtime_error("Calling connect on null CAN device");
@@ -25,7 +27,7 @@ struct CanDeviceQt : public CanDeviceInterface {
     virtual void setFramesReceivedCbk(const framesReceived_t& cb) override
     {
         if (_device) {
-            QObject::connect(_device, &QCanBusDevice::framesReceived, cb);
+            QObject::connect(_device.get(), &QCanBusDevice::framesReceived, cb);
         } else {
             cds_error("Calling connect on null CAN device");
             throw std::runtime_error("Calling connect on null CAN device");
@@ -35,7 +37,7 @@ struct CanDeviceQt : public CanDeviceInterface {
     virtual void setErrorOccurredCbk(const errorOccurred_t& cb) override
     {
         if (_device) {
-            QObject::connect(_device, &QCanBusDevice::errorOccurred, cb);
+            QObject::connect(_device.get(), &QCanBusDevice::errorOccurred, cb);
         } else {
             cds_error("Calling connect on null CAN device");
             throw std::runtime_error("Calling connect on null CAN device");
@@ -44,8 +46,7 @@ struct CanDeviceQt : public CanDeviceInterface {
 
     virtual bool init(const QString& backend, const QString& iface) override
     {
-        delete _device;
-        _device = QCanBus::instance()->createDevice(backend.toUtf8(), iface);
+        _device.reset(QCanBus::instance()->createDevice(backend.toUtf8(), iface));
 
         if (!_device) {
             cds_error("Failed to create candevice");
@@ -53,7 +54,7 @@ struct CanDeviceQt : public CanDeviceInterface {
             return false;
         }
 
-        if(_parent && _parent->thread()) {
+        if (_parent && _parent->thread()) {
             _device->moveToThread(_parent->thread());
             _device->setParent(_parent);
         }
@@ -123,8 +124,8 @@ struct CanDeviceQt : public CanDeviceInterface {
     }
 
 private:
-    QCanBusDevice* _device{nullptr};
-    QObject* _parent{nullptr};
+    std::unique_ptr<QCanBusDevice> _device;
+    QObject* _parent{ nullptr };
 };
 
 #endif /* end of include guard: CANDEVICEQT_H_JYBV8GIQ */

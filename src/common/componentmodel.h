@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtWidgets/QLabel>
 #include <functional>
 #include <log.h>
@@ -161,7 +162,7 @@ public:
      */
     virtual QWidget* embeddedWidget() override
     {
-        return _label.get();
+        return _label.data();
     }
 
     /**
@@ -234,7 +235,7 @@ public:
 
 protected:
     C _component;
-    std::unique_ptr<QLabel> _label{ std::make_unique<QLabel>() };
+    QPointer<QLabel> _label{ new QLabel };
     QString _caption;
     QString _name;
     bool _resizable{ false };

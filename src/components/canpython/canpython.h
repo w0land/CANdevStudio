@@ -2,6 +2,7 @@
 #define CANPYTHON_H_5RHVUNKL
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QScopedPointer>
 #include <QtSerialBus/QCanBusFrame>
 
@@ -10,6 +11,8 @@
 #include <memory>
 
 class QWidget;
+class QTextEdit;
+class QPushButton;
 
 class CanPython : public QObject, public ComponentInterface {
     Q_OBJECT
@@ -17,17 +20,15 @@ class CanPython : public QObject, public ComponentInterface {
 public:
     CanPython();
     QWidget* mainWidget() override;
-    void setConfig(const QJsonObject& ) override {}
-    void setConfig(const QObject& ) override {}
+    void setConfig(const QJsonObject&) override {}
+    void setConfig(const QObject&) override {}
     QJsonObject getConfig() const override
     {
         return QJsonObject{};
     }
-    std::shared_ptr<QObject> getQConfig() const override
-    {
-        return std::shared_ptr<QObject>{};
-    }
+    std::shared_ptr<QObject> getQConfig() const override;
     void configChanged() override {}
+
     bool mainWidgetDocked() const override
     {
         return true;
@@ -45,11 +46,18 @@ signals:
 public slots:
     // void txFrameIn(const QCanBusFrame& frame);
     // void rxFrameIn(const QCanBusFrame& frame);
-    void stopSimulation() override;
-    void startSimulation() override;
+    void stopSimulation() override {}
+    void startSimulation() override {}
 
 private:
     QWidget* _mainWidget;
+
+    std::map<QString, QVariant> _props;
+    ComponentInterface::ComponentProperties _supportedProps = { { "name", { QVariant::String, true } } };
+
+    QPointer<QWidget> _pytonEditWidget;
+    QTextEdit* _editor;
+    std::array<QPushButton*, 3> _bottomButtons;
 };
 
 #endif /* end of include guard: CANPYTHON_H_5RHVUNKL */
